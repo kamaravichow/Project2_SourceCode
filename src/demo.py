@@ -159,11 +159,18 @@ def demo_make_suggestion(engine: GameEngine):
     print_with_delay("\n=== MAKE A SUGGESTION ===")
     print_with_delay(f"You are suggesting a murder in the {player.current_room.name}")
     
-    # For demo purposes, use predetermined values
-    suspect_idx = int(input("Choose a suspect (0-5): ")) % len(engine.suspects)
+    # Display numbered list of suspects
+    print("\nSuspects:")
+    for i, suspect_option in enumerate(engine.suspects):
+        print(f"  {i}. {suspect_option.name}")
+    suspect_idx = int(input("Choose a suspect (enter number 0-5): ")) % len(engine.suspects)
     suspect = engine.suspects[suspect_idx]
     
-    weapon_idx = int(input("Choose a weapon (0-5): ")) % len(engine.weapons)
+    # Display numbered list of weapons
+    print("\nWeapons:")
+    for i, weapon_option in enumerate(engine.weapons):
+        print(f"  {i}. {weapon_option.name}")
+    weapon_idx = int(input("Choose a weapon (enter number 0-5): ")) % len(engine.weapons)
     weapon = engine.weapons[weapon_idx]
     
     print_with_delay(f"\nYou suggest that {suspect.name} committed the murder")
@@ -212,6 +219,19 @@ def demo_make_accusation(engine: GameEngine):
     print_with_delay(f"- Suspect: {solution_suspect.name}")
     print_with_delay(f"- Weapon: {solution_weapon.name}")
     print_with_delay(f"- Room: {solution_room.name}")
+    
+    # Display numbered lists for reference
+    print("\nSuspects (for reference):")
+    for i, suspect in enumerate(engine.suspects):
+        print(f"  {i}. {suspect.name}")
+        
+    print("\nWeapons (for reference):")
+    for i, weapon in enumerate(engine.weapons):
+        print(f"  {i}. {weapon.name}")
+        
+    print("\nRooms (for reference):")
+    for i, room in enumerate(list(engine.rooms.values())):
+        print(f"  {i}. {room.name}")
     
     input("\nPress Enter to make this accusation...")
     

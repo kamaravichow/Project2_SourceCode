@@ -86,9 +86,14 @@ def print_suggestion_history(suggestions: List[SuggestionRecord]):
 
 def get_room_choice(rooms: List[Room]) -> Optional[Room]:
     """Let player choose a room from a list."""
+    # Display the numbered list of rooms first
+    print("\nAvailable rooms:")
+    for i, room in enumerate(rooms, 1):
+        print(f"  {i}. {room.name}")
+        
     while True:
         try:
-            choice = input("Enter room number (or 'c' to cancel): ")
+            choice = input("\nEnter room number (or 'c' to cancel): ")
             if choice.lower() == 'c':
                 return None
                 
@@ -103,13 +108,13 @@ def get_room_choice(rooms: List[Room]) -> Optional[Room]:
 
 def get_card_choice(cards: List, prompt: str) -> Optional:
     """Let player choose a card from a list."""
-    print(prompt)
+    print(f"\n{prompt}")
     for i, card in enumerate(cards, 1):
         print(f"  {i}. {card.name}")
         
     while True:
         try:
-            choice = input("Enter number (or 'c' to cancel): ")
+            choice = input("\nEnter number (or 'c' to cancel): ")
             if choice.lower() == 'c':
                 return None
                 
@@ -132,11 +137,17 @@ def make_suggestion(engine: GameEngine, player: Player) -> None:
     print(f"You are suggesting a murder in the {player.current_room.name}")
     
     # Choose suspect
+    print("\nAll Suspects:")
+    for i, suspect_option in enumerate(engine.suspects, 1):
+        print(f"  {i}. {suspect_option.name}")
     suspect = get_card_choice(engine.suspects, "Choose a suspect:")
     if not suspect:
         return
     
     # Choose weapon
+    print("\nAll Weapons:")
+    for i, weapon_option in enumerate(engine.weapons, 1):
+        print(f"  {i}. {weapon_option.name}")
     weapon = get_card_choice(engine.weapons, "Choose a weapon:")
     if not weapon:
         return
@@ -182,17 +193,26 @@ def make_accusation(engine: GameEngine, player: Player) -> None:
     if input("> ").lower() != 'y':
         return
     
-    # Choose suspect
+    # Display and choose suspect
+    print("\nAll Suspects:")
+    for i, suspect_option in enumerate(engine.suspects, 1):
+        print(f"  {i}. {suspect_option.name}")
     suspect = get_card_choice(engine.suspects, "Who committed the murder?")
     if not suspect:
         return
     
-    # Choose weapon
+    # Display and choose weapon
+    print("\nAll Weapons:")
+    for i, weapon_option in enumerate(engine.weapons, 1):
+        print(f"  {i}. {weapon_option.name}")
     weapon = get_card_choice(engine.weapons, "What was the murder weapon?")
     if not weapon:
         return
     
-    # Choose room
+    # Display and choose room
+    print("\nAll Rooms:")
+    for i, room_option in enumerate(list(engine.rooms.values()), 1):
+        print(f"  {i}. {room_option.name}")
     room = get_card_choice(list(engine.rooms.values()), "Where was the murder committed?")
     if not room:
         return
@@ -224,11 +244,22 @@ def player_turn(engine: GameEngine) -> None:
     """Handle a single player's turn."""
     player = engine.get_current_player()
     
+    # Show turn banner
+    clear_screen()
+    print(f"\n{'='*50}")
+    print(f"🎲 {player.name}'s TURN 🎲".center(50))
+    print(f"{'='*50}\n")
+    
     if not player.active:
-        print(f"\n{player.name}'s turn is skipped (eliminated)")
-        time.sleep(1)
+        print(f"{player.name} has been eliminated and cannot make accusations.")
+        print("Their turn will be skipped.")
+        time.sleep(2)
         engine.next_player()
         return
+        
+    # Wait for player to acknowledge if not the first player
+    if player.name != engine.players[0].name:
+        input(f"Pass the device to {player.name} and press Enter to continue...")
     
     while True:
         clear_screen()
@@ -271,7 +302,9 @@ def player_turn(engine: GameEngine) -> None:
             input("\nPress Enter to continue...")
             
         elif choice == '5':  # End turn
-            engine.next_player()
+            next_player = engine.next_player()
+            print(f"\nEnding your turn. Next player: {next_player.name}")
+            time.sleep(1)
             break
             
         else:
@@ -323,6 +356,8 @@ def main():
     
     clear_screen()
     print("Game initialized! Let the investigation begin!\n")
+    print(f"First player: {engine.get_current_player().name}")
+    input("Press Enter to start the game...")
     
     # Game loop
     while not engine.game_over:
